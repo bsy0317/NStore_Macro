@@ -78,7 +78,7 @@ def main():
             time.sleep(2)
             element_logo.click()
             element = WebDriverWait(driver,60).until(EC.presence_of_element_located((By.ID, "MAIN_CONTENT_ROOT_ID"))) #로딩완료될때 까지 기다림(제한시간 1분)
-            console.log("[>] Proxy 접속 성공. 메인로고(1) 페이지 이동 대기")
+            console.log("[>] Proxy 접속 성공. 메인로고(2) 페이지 이동 대기")
             time.sleep(10) #10초 기다리기
             
             element_logo = driver.find_element_by_xpath('/html/body/div/div/div[3]/div[2]/div[1]/div/div[1]/h1')
