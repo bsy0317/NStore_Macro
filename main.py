@@ -48,7 +48,7 @@ def main():
         console.log(f"[{proxy_server[0]}] Proxy 할당 완료 ({proxy_server[1]})")
         
         try:
-            sp = subprocess.Popen(r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe --remote-debugging-port=9222 --user-data-dir="C:\chrometemp" --incognito --window-size=1920,1080' 
+            sp = subprocess.Popen(r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe --remote-debugging-port=9222 --user-data-dir="C:\chrometemp" --incognito --window-size=1920,1080 --headless' 
             + f" --proxy-server={proxy_server[1]}") # 디버거 크롬 구동(Headless, 익명모드, 프록시)
             kill_pid_backup = sp.pid
             options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") #크롬 디버깅포트 연결
