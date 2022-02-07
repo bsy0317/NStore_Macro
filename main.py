@@ -48,7 +48,7 @@ def main():
         console.log(f"[{proxy_server[0]}] Proxy 할당 완료 ({proxy_server[1]})")
         
         try:
-            sp = subprocess.Popen(r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe --remote-debugging-port=9222 --user-data-dir="C:\chrometemp" --incognito --window-size=1920,1080 --headless' 
+            sp = subprocess.Popen(r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe --remote-debugging-port=9222 --user-data-dir="C:\chrometemp" --incognito --window-size=1024,768' 
             + f" --proxy-server={proxy_server[1]}") # 디버거 크롬 구동(Headless, 익명모드, 프록시)
             kill_pid_backup = sp.pid
             options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") #크롬 디버깅포트 연결
@@ -63,24 +63,30 @@ def main():
             driver.get(URL) #스토어 URL 방문
             element = WebDriverWait(driver,60).until(EC.presence_of_element_located((By.ID, "MAIN_CONTENT_ROOT_ID"))) #메인페이지가 로딩완료될때 까지 기다림(제한시간 1분)
             driver.execute_script('window.scrollTo(0, document.body.scrollHeight);') #스크롤을 아래로 내림
+            console.log("[>] Proxy 접속 성공. 카테고리 페이지 이동 대기")
             time.sleep(10) #10초 기다리기
             
             driver.execute_script('window.scrollTo(document.body.scrollHeight, 0);') #스크롤을 위로 올림
             driver.find_element_by_xpath('/html/body/div/div/div[3]/div[2]/div[1]/div/div[2]/div/div/div/div/div/div[1]/div/ul[1]/li[2]/a').click() #카테고리 1번 클릭
             element = WebDriverWait(driver,60).until(EC.presence_of_element_located((By.ID, "MAIN_CONTENT_ROOT_ID"))) #로딩완료될때 까지 기다림(제한시간 1분)
+            console.log("[>] Proxy 접속 성공. 메인로고(1) 페이지 이동 대기")
             time.sleep(10) #10초 기다리기
             
             element_logo = driver.find_element_by_xpath('/html/body/div/div/div[3]/div[2]/div[1]/div/div[1]/h1')  #로고 클릭
             hover = ActionChains(driver).move_to_element(element_logo)
             hover.perform()
-            time.sleep(1)
+            time.sleep(2)
             element_logo.click()
             element = WebDriverWait(driver,60).until(EC.presence_of_element_located((By.ID, "MAIN_CONTENT_ROOT_ID"))) #로딩완료될때 까지 기다림(제한시간 1분)
+            console.log("[>] Proxy 접속 성공. 메인로고(1) 페이지 이동 대기")
             time.sleep(10) #10초 기다리기
             
+            element_logo = driver.find_element_by_xpath('/html/body/div/div/div[3]/div[2]/div[1]/div/div[1]/h1')
+            hover = ActionChains(driver).move_to_element(element_logo)
             hover.perform()
-            time.sleep(1)
+            time.sleep(2)
             element_logo.click()
+            console.log("[>] 루틴 수행 완료. 10초 대기")
             time.sleep(10) #10초 기다리기
             
             console.log(f"[@] Request Successful.")
