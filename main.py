@@ -35,6 +35,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 
 kill_pid_backup = 0
+debugging_port = random.randrange(60000,65000)
 
 def main():
     URL = "https://smartstore.naver.com/ooooofish"
@@ -48,10 +49,10 @@ def main():
         console.log(f"[{proxy_server[0]}] Proxy 할당 완료 ({proxy_server[1]})")
         
         try:
-            sp = subprocess.Popen(r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe --remote-debugging-port=9222 --user-data-dir="C:\chrometemp" --incognito --window-size=1024,768' 
+            sp = subprocess.Popen(r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe --remote-debugging-port='+str(debugging_port)+' --user-data-dir="C:\chrometemp('+str(debugging_port)+')" --incognito --window-size=1024,768' 
             + f" --proxy-server={proxy_server[1]}") # 디버거 크롬 구동(Headless, 익명모드, 프록시)
             kill_pid_backup = sp.pid
-            options.add_experimental_option("debuggerAddress", "127.0.0.1:9222") #크롬 디버깅포트 연결
+            options.add_experimental_option("debuggerAddress", f"127.0.0.1:{debugging_port}") #크롬 디버깅포트 연결
             chrome_ver = chromedriver_autoinstaller.get_chrome_version().split('.')[0] #크롬버전 파싱(폴더경로)
             try:
                 driver = webdriver.Chrome(f'./{chrome_ver}/chromedriver.exe', options=options) #크롬드라이버 실행
@@ -99,7 +100,7 @@ def main():
         os.kill(sp.pid, signal.SIGTERM) #크롬에 킬 신호 전송
         
         try:
-            shutil.rmtree(r"c:\chrometemp", ignore_errors=True) #크롬 임시데이터 강제청소
+            shutil.rmtree(r"c:\chrometemp("+str(debugging_port)+")", ignore_errors=True) #크롬 임시데이터 강제청소
         except FileNotFoundError:
             pass
     return 0
@@ -123,6 +124,7 @@ def kill_all(pid):
     return 0
     
 if __name__ == "__main__":
+    console.log("[!] DEBUG PORT = " + str(debugging_port))
     signal.signal(signal.SIGINT, sigint_handler)
     try:
         chromedriver_autoinstaller.install() 
