@@ -38,8 +38,8 @@ kill_pid_backup = 0
 debugging_port = random.randrange(60000,65000)
 
 def main():
-    URL = "https://smartstore.naver.com/ooooofish"
-    #URL = "https://ipipip.kr"
+    URL = "https://cr3.shopping.naver.com/bridge/searchGate?query=%EC%86%8D%EC%B4%88%EC%98%A4%EB%AF%B8%EC%9E%90&bt=-1&nv_mid=83387587978&cat_id=50004748&h=bc43fdc740bf87f3caf01d8905d8579c055c8146&t=KZHTTHF9&frm=NVSCPRO"
+    Referer = "https://search.naver.com/search.naver?sm=tab_hty.top&where=nexearch&query=%EC%86%8D%EC%B4%88%EC%98%A4%EB%AF%B8%EC%9E%90&oquery=%EC%86%8D%EC%B4%88%EC%98%A4%EB%AF%B8%EC%A0%80&tqi=hlUfndprvh8ssaZV8PCssssstCs-322620"
     
     options = Options()
     options.add_argument('headless')
@@ -49,7 +49,7 @@ def main():
         console.log(f"[{proxy_server[0]}] Proxy 할당 완료 ({proxy_server[1]})")
         
         try:
-            sp = subprocess.Popen(r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe --remote-debugging-port='+str(debugging_port)+' --user-data-dir="C:\chrometemp('+str(debugging_port)+')" --incognito --window-size=1024,768' 
+            sp = subprocess.Popen(getChromeDir() + r' --remote-debugging-port='+str(debugging_port)+' --user-data-dir="C:\chrometemp('+str(debugging_port)+')" --incognito --window-size=1024,768' 
             + f" --proxy-server={proxy_server[1]}") # 디버거 크롬 구동(Headless, 익명모드, 프록시)
             kill_pid_backup = sp.pid
             options.add_experimental_option("debuggerAddress", f"127.0.0.1:{debugging_port}") #크롬 디버깅포트 연결
@@ -64,13 +64,13 @@ def main():
             driver.get(URL) #스토어 URL 방문
             element = WebDriverWait(driver,60).until(EC.presence_of_element_located((By.ID, "MAIN_CONTENT_ROOT_ID"))) #메인페이지가 로딩완료될때 까지 기다림(제한시간 1분)
             driver.execute_script('window.scrollTo(0, document.body.scrollHeight);') #스크롤을 아래로 내림
-            console.log("[>] Proxy 접속 성공. 카테고리 페이지 이동 대기")
+            console.log("[>] [green bold]Proxy 접속 성공.[/green bold] 카테고리 페이지 이동 대기")
             time.sleep(10) #10초 기다리기
             
             driver.execute_script('window.scrollTo(document.body.scrollHeight, 0);') #스크롤을 위로 올림
             driver.find_element_by_xpath('/html/body/div/div/div[3]/div[2]/div[1]/div/div[2]/div/div/div/div/div/div[1]/div/ul[1]/li[2]/a').click() #카테고리 1번 클릭
             element = WebDriverWait(driver,60).until(EC.presence_of_element_located((By.ID, "MAIN_CONTENT_ROOT_ID"))) #로딩완료될때 까지 기다림(제한시간 1분)
-            console.log("[>] Proxy 접속 성공. 메인로고(1) 페이지 이동 대기")
+            console.log("[>] [green bold]Proxy 접속 성공.[/green bold] 메인로고(1) 페이지 이동 대기")
             time.sleep(10) #10초 기다리기
             
             element_logo = driver.find_element_by_xpath('/html/body/div/div/div[3]/div[2]/div[1]/div/div[1]/h1')  #로고 클릭
@@ -79,7 +79,7 @@ def main():
             time.sleep(2)
             element_logo.click()
             element = WebDriverWait(driver,60).until(EC.presence_of_element_located((By.ID, "MAIN_CONTENT_ROOT_ID"))) #로딩완료될때 까지 기다림(제한시간 1분)
-            console.log("[>] Proxy 접속 성공. 메인로고(2) 페이지 이동 대기")
+            console.log("[>] [green bold]Proxy 접속 성공.[/green bold] 메인로고(2) 페이지 이동 대기")
             time.sleep(10) #10초 기다리기
             
             element_logo = driver.find_element_by_xpath('/html/body/div/div/div[3]/div[2]/div[1]/div/div[1]/h1')
@@ -87,12 +87,27 @@ def main():
             hover.perform()
             time.sleep(2)
             element_logo.click()
+            element = WebDriverWait(driver,60).until(EC.presence_of_element_located((By.ID, "MAIN_CONTENT_ROOT_ID"))) #로딩완료될때 까지 기다림(제한시간 1분)
+            console.log("[>] [green bold]Proxy 접속 성공.[/green bold] 메인로고(3) 페이지 이동 대기")
+            time.sleep(10) #10초 기다리기
+            
+            element_logo = driver.find_element_by_xpath('/html/body/div/div/div[3]/div[2]/div[1]/div/div[1]/h1')
+            hover = ActionChains(driver).move_to_element(element_logo)
+            hover.perform()
+            time.sleep(2)
+            element_logo.click()
+            element = WebDriverWait(driver,60).until(EC.presence_of_element_located((By.ID, "MAIN_CONTENT_ROOT_ID"))) #로딩완료될때 까지 기다림(제한시간 1분)
+            console.log("[>] [green bold]Proxy 접속 성공.[/green bold]")
             console.log("[>] 루틴 수행 완료. 10초 대기")
             time.sleep(10) #10초 기다리기
             
-            console.log(f"[@] Request Successful.")
+            today_count_tmp = driver.find_element_by_xpath('/html/body/div/div/div[3]/div[2]/div[1]/div/div[1]/div[2]/div/div/div/div/div[2]/div/span[1]/em').get_attribute('innerText')
+            today_count = "알수없음" if int(today_count_tmp) == 0 else today_count_tmp
+            console.log(f"[@] [magenta]NStore Count = [bold]{today_count}[/bold][/magenta]")
+            console.log(f"[@] [green bold]Request Successful.[/green bold]")
+            
         except Exception as e:
-            console.log("[!] Proxy Conn Failure.")
+            console.log("[!] [red]Proxy Conn Failure.[/red]")
             console.log(e)
         
         driver.delete_all_cookies() #쿠키 모두 삭제
@@ -121,8 +136,18 @@ def sigint_handler(signal, frame):
 
 def kill_all(pid):
     subprocess.Popen("TASKKILL /F /PID {pid} /T".format(pid=pid)) #크롬에 킬 신호 전송
+    shutil.rmtree(r"c:\chrometemp("+str(debugging_port)+")", ignore_errors=True) #크롬 임시데이터 강제청소
     return 0
-    
+
+def getChromeDir():
+    dir_32bit = r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+    dir_64bit = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+    if os.path.isfile(dir_32bit):
+        return dir_32bit
+    else:
+        return dir_64bit
+    return 0
+
 if __name__ == "__main__":
     console.log("[!] DEBUG PORT = " + str(debugging_port))
     signal.signal(signal.SIGINT, sigint_handler)
@@ -130,4 +155,5 @@ if __name__ == "__main__":
         chromedriver_autoinstaller.install() 
         main()
     except Exception as ex:
+        console.log("[bold][red][Important][/red][/bold] 처리되지 않은 오류가 발생했습니다.")
         exit(0)
