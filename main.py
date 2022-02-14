@@ -39,10 +39,10 @@ debugging_port = random.randrange(60000,65000)
 
 def main():
     URL = "https://cr3.shopping.naver.com/bridge/searchGate?query=%EC%86%8D%EC%B4%88%EC%98%A4%EB%AF%B8%EC%9E%90+%EB%B0%98%EA%B1%B4%EC%A1%B0%EC%83%9D%EC%84%A0&bt=-1&nv_mid=83193516581&cat_id=50004694&h=39e475322b0aaa367d1d93b79773f0f3f08fc916&t=KZM29POQ&frm=NVSCPRO"
+    #URL = "https://smartstore.naver.com/ooooofish/products/5649019336"
     Referer = "https://search.naver.com/search.naver?sm=tab_hty.top&where=nexearch&query=%EC%86%8D%EC%B4%88%EC%98%A4%EB%AF%B8%EC%9E%90&oquery=%EC%86%8D%EC%B4%88%EC%98%A4%EB%AF%B8%EC%A0%80&tqi=hlUfndprvh8ssaZV8PCssssstCs-322620"
     
     options = Options()
-    options.add_argument('headless')
     
     while True:
         proxy_server = get_proxy_3().split("/") #2번 프록시 Parser 사용
@@ -62,7 +62,7 @@ def main():
             time.sleep(2) #2초 기다리기
             
             driver.get(URL) #스토어 URL 방문
-            element = WebDriverWait(driver,60).until(EC.presence_of_element_located((By.ID, "MAIN_CONTENT_ROOT_ID"))) #메인페이지가 로딩완료될때 까지 기다림(제한시간 1분)
+            element = WebDriverWait(driver,120).until(EC.presence_of_element_located((By.ID, "MAIN_CONTENT_ROOT_ID"))) #메인페이지가 로딩완료될때 까지 기다림(제한시간 2분)
             driver.execute_script('window.scrollTo(0, document.body.scrollHeight);') #스크롤을 아래로 내림
             console.log("[>] [green bold]Proxy 접속 성공.[/green bold] 카테고리 페이지 이동 대기")
             time.sleep(10) #10초 기다리기
