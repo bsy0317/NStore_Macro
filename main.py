@@ -38,14 +38,14 @@ kill_pid_backup = 0
 debugging_port = random.randrange(60000,65000)
 
 def main():
-    URL = "https://cr3.shopping.naver.com/bridge/searchGate?query=%EC%86%8D%EC%B4%88%EC%98%A4%EB%AF%B8%EC%9E%90&bt=-1&nv_mid=83387587978&cat_id=50004748&h=bc43fdc740bf87f3caf01d8905d8579c055c8146&t=KZHTTHF9&frm=NVSCPRO"
+    URL = "https://cr3.shopping.naver.com/bridge/searchGate?query=%EC%86%8D%EC%B4%88%EC%98%A4%EB%AF%B8%EC%9E%90+%EB%B0%98%EA%B1%B4%EC%A1%B0%EC%83%9D%EC%84%A0&bt=-1&nv_mid=83193516581&cat_id=50004694&h=39e475322b0aaa367d1d93b79773f0f3f08fc916&t=KZM29POQ&frm=NVSCPRO"
     Referer = "https://search.naver.com/search.naver?sm=tab_hty.top&where=nexearch&query=%EC%86%8D%EC%B4%88%EC%98%A4%EB%AF%B8%EC%9E%90&oquery=%EC%86%8D%EC%B4%88%EC%98%A4%EB%AF%B8%EC%A0%80&tqi=hlUfndprvh8ssaZV8PCssssstCs-322620"
     
     options = Options()
     options.add_argument('headless')
     
     while True:
-        proxy_server = get_proxy_2().split("/") #2번 프록시 Parser 사용
+        proxy_server = get_proxy_3().split("/") #2번 프록시 Parser 사용
         console.log(f"[{proxy_server[0]}] Proxy 할당 완료 ({proxy_server[1]})")
         
         try:
@@ -120,13 +120,18 @@ def main():
             pass
     return 0
     
-def get_proxy(): #프록시 크롤링 1번
+def get_proxy_1(): #프록시 크롤링 1번
     response = requests.get("https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/json/proxies-http%2Bhttps-beautify.json")
     res_json = response.json()['https'] #HTTPS Proxy만 추출
     return f"HTTPS/{random.choice(res_json)}"
     
 def get_proxy_2(): #프록시 크롤링 2번
     response = requests.get("https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/http.txt")
+    res_text = response.text.split('\n')
+    return f"HTTPS/{random.choice(res_text)}"  
+
+def get_proxy_3(): #프록시 크롤링 3번
+    response = requests.get("https://raw.githubusercontent.com/roosterkid/openproxylist/main/HTTPS_RAW.txt")
     res_text = response.text.split('\n')
     return f"HTTPS/{random.choice(res_text)}"  
 
