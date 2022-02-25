@@ -38,8 +38,7 @@ kill_pid_backup = 0
 debugging_port = random.randrange(60000,65000)
 
 def main():
-    URL = "https://cr3.shopping.naver.com/bridge/searchGate?query=%EC%86%8D%EC%B4%88%EC%98%A4%EB%AF%B8%EC%9E%90+%EB%B0%98%EA%B1%B4%EC%A1%B0%EC%83%9D%EC%84%A0&bt=-1&nv_mid=83193516581&cat_id=50004694&h=39e475322b0aaa367d1d93b79773f0f3f08fc916&t=KZM29POQ&frm=NVSCPRO"
-    #URL = "https://smartstore.naver.com/ooooofish/products/5649019336"
+    URL = "https://cr3.shopping.naver.com/bridge/searchGate?query=%EC%96%91%EB%AF%B8%EB%A6%AC&bt=-1&nv_mid=83539842156&cat_id=50004694&h=21968067ab746ab6a58408a8fc07ef421a3496ee&t=L01XP0GD&frm=NVSCPRO"
     Referer = "https://search.naver.com/search.naver?sm=tab_hty.top&where=nexearch&query=%EC%86%8D%EC%B4%88%EC%98%A4%EB%AF%B8%EC%9E%90&oquery=%EC%86%8D%EC%B4%88%EC%98%A4%EB%AF%B8%EC%A0%80&tqi=hlUfndprvh8ssaZV8PCssssstCs-322620"
     
     options = Options()
@@ -62,7 +61,12 @@ def main():
             time.sleep(2) #2초 기다리기
             
             driver.get(URL) #스토어 URL 방문
-            element = WebDriverWait(driver,120).until(EC.presence_of_element_located((By.ID, "MAIN_CONTENT_ROOT_ID"))) #메인페이지가 로딩완료될때 까지 기다림(제한시간 2분)
+            ret_code = refresh(driver,0)
+            if ret_code < 0:
+                console.log("[!] [red]Proxy Conn Failure.[/red]")
+                continue
+            
+            element = WebDriverWait(driver,60).until(EC.presence_of_element_located((By.ID, "MAIN_CONTENT_ROOT_ID"))) #로딩완료될때 까지 기다림(제한시간 1분)
             driver.execute_script('window.scrollTo(0, document.body.scrollHeight);') #스크롤을 아래로 내림
             console.log("[>] [green bold]Proxy 접속 성공.[/green bold] 카테고리 페이지 이동 대기")
             time.sleep(10) #10초 기다리기
@@ -135,6 +139,9 @@ def get_proxy_3(): #프록시 크롤링 3번
     res_text = response.text.split('\n')
     return f"HTTPS/{random.choice(res_text)}"  
 
+#def get_proxy_random():
+#    return f"HTTPS/{random.choice(res_text)}"
+
 def sigint_handler(signal, frame):
     kill_all(kill_pid_backup) #크롬에 킬 신호 전송
     sys.exit(0)
@@ -152,7 +159,21 @@ def getChromeDir():
     else:
         return dir_64bit
     return 0
-
+    
+def refresh(driver,loop):
+    loop = loop + 1
+    if loop >= 10: #10번 재시도 후 변화 없으면 -1 리턴
+        return -1
+    try:
+        element = WebDriverWait(driver, 5).until(
+            lambda wd: True if driver.current_url.find("smartstore.naver.com") != -1 else False
+        )
+    except Exception as e:
+        console.log("[>] [green bold]Refresh[/green bold] 프록시 연결시간 초과. Refresh 명령 전송")
+        driver.refresh()
+        refresh(driver, loop)
+    return 0
+    
 if __name__ == "__main__":
     console.log("[!] DEBUG PORT = " + str(debugging_port))
     signal.signal(signal.SIGINT, sigint_handler)
