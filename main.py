@@ -61,11 +61,10 @@ def main():
             time.sleep(2) #2초 기다리기
             
             driver.get(URL) #스토어 URL 방문
-            ret_code = refresh(driver,0)
-            if ret_code < 0:
-                raise Exception('Page load timeout')
+            if not refresh(driver):
+                raise Exception('SearchGate Page load timeout')
             
-            if not refresh_store(driver,0):
+            if not refresh_store(driver):
                 raise Exception('Page load timeout')
             driver.execute_script('window.scrollTo(0, document.body.scrollHeight);') #스크롤을 아래로 내림
             console.log("[>] [green bold]Proxy 접속 성공.[/green bold] 카테고리 페이지 이동 대기")
@@ -73,7 +72,7 @@ def main():
             driver.execute_script('window.scrollTo(document.body.scrollHeight, 0);') #스크롤을 위로 올림
             
             driver.find_element_by_xpath('/html/body/div/div/div[3]/div[2]/div[1]/div/div[2]/div/div/div/div/div/div[1]/div/ul[1]/li[2]/a').click() #카테고리 1번 클릭
-            if not refresh_store(driver,0):
+            if not refresh_store(driver):
                 raise Exception('Page load timeout')
             console.log("[>] [green bold]Proxy 접속 성공.[/green bold] 메인로고(1) 페이지 이동 대기")
             time.sleep(10) #10초 기다리기
@@ -83,7 +82,7 @@ def main():
             hover.perform()
             time.sleep(2)
             element_logo.click()
-            if not refresh_store(driver,0):
+            if not refresh_store(driver):
                 raise Exception('Page load timeout')
             console.log("[>] [green bold]Proxy 접속 성공.[/green bold] 메인로고(2) 페이지 이동 대기")
             time.sleep(10) #10초 기다리기
@@ -93,7 +92,7 @@ def main():
             hover.perform()
             time.sleep(2)
             element_logo.click()
-            if not refresh_store(driver,0):
+            if not refresh_store(driver):
                 raise Exception('Page load timeout')
             console.log("[>] [green bold]Proxy 접속 성공.[/green bold] 메인로고(3) 페이지 이동 대기")
             time.sleep(10) #10초 기다리기
@@ -103,7 +102,7 @@ def main():
             hover.perform()
             time.sleep(2)
             element_logo.click()
-            if not refresh_store(driver,0):
+            if not refresh_store(driver):
                 raise Exception('Page load timeout')
             console.log("[>] [green bold]Proxy 접속 성공.[/green bold]")
             console.log("[>] 루틴 수행 완료. 10초 대기")
@@ -165,33 +164,35 @@ def getChromeDir():
         return dir_64bit
     return 0
     
-def refresh(driver,loop):
-    loop = loop + 1
-    if loop > 10: #10번 재시도 후 변화 없으면 -1 리턴
-        return -1
-    try:
-        element = WebDriverWait(driver, 5).until(
-            lambda wd: True if driver.current_url.find("smartstore.naver.com") != -1 else False
-        )
-    except Exception as e:
-        console.log("["+str(loop)+"/10]"+" [green bold]Refresh[/green bold] 프록시 연결시간 초과. Refresh 명령 전송")
-        driver.refresh()
-        refresh(driver, loop)
-    return 0
+def refresh(driver):
+    loop = 0
+    while True:
+        loop = loop + 1
+        if loop > 10: #10번 재시도 후 변화 없으면 false 리턴
+            return False
+        try:
+            element = WebDriverWait(driver, 5).until(
+                lambda wd: True if driver.current_url.find("smartstore.naver.com") != -1 else False
+            )
+            return True
+        except Exception as e:
+            console.log("["+str(loop)+"/10]"+" [green bold]Refresh[/green bold] 프록시 연결시간 초과. Refresh 명령 전송")
+            driver.refresh()
 
-def refresh_store(driver,loop): #스토어 내부에서 새로고침
-    loop = loop + 1
-    if loop > 3: #3번 재시도 후 변화 없으면 False 리턴
-        return False
-    try:
-        element = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.ID, "MAIN_CONTENT_ROOT_ID"))
-        )
-    except Exception as e:
-        console.log("["+str(loop)+"/3]" +" [green bold]Store Refresh[/green bold] 프록시 연결시간 초과. Refresh 명령 전송")
-        driver.refresh()
-        refresh_store(driver, loop)
-    return True
+def refresh_store(driver): #스토어 내부에서 새로고침
+    loop = 0
+    while True:
+        loop = loop + 1
+        if loop > 3: #3번 재시도 후 변화 없으면 False 리턴
+            return False
+        try:
+            element = WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.ID, "MAIN_CONTENT_ROOT_ID"))
+            )
+            return True
+        except Exception as e:
+            console.log("["+str(loop)+"/3]" +" [green bold]Store Refresh[/green bold] 프록시 연결시간 초과. Refresh 명령 전송")
+            driver.refresh()
     
 if __name__ == "__main__":
     console.log("[!] DEBUG PORT = " + str(debugging_port))
