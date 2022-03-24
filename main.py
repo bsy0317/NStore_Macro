@@ -44,8 +44,8 @@ def main():
     options = Options()
     
     while True:
-        proxy_server = get_proxy_3().split("/") #2번 프록시 Parser 사용
-        console.log(f"[{proxy_server[0]}] Proxy 할당 완료 ({proxy_server[1]})")
+        proxy_server = get_proxy_local("./proxy_scraper/proxies").split("|")
+        console.log(f"[{proxy_server[0].upper()}] Proxy 할당 완료 ({proxy_server[1]})")
         
         try:
             sp = subprocess.Popen(getChromeDir() + r' --remote-debugging-port='+str(debugging_port)+' --user-data-dir="C:\chrometemp('+str(debugging_port)+')" --incognito --enable-auto-reload --headless' 
@@ -127,24 +127,30 @@ def main():
         except FileNotFoundError:
             pass
     return 0
-    
-def get_proxy_1(): #프록시 크롤링 1번
-    response = requests.get("https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/json/proxies-http%2Bhttps-beautify.json")
-    res_json = response.json()['https'] #HTTPS Proxy만 추출
-    return f"HTTPS/{random.choice(res_json)}"
-    
-def get_proxy_2(): #프록시 크롤링 2번
-    response = requests.get("https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/http.txt")
-    res_text = response.text.split('\n')
-    return f"HTTPS/{random.choice(res_text)}"  
 
-def get_proxy_3(): #프록시 크롤링 3번
+def get_proxy_scrap(): #웹에서 프록시 리스트 가져옴
     response = requests.get("https://raw.githubusercontent.com/roosterkid/openproxylist/main/HTTPS_RAW.txt")
     res_text = response.text.split('\n')
-    return f"HTTPS/{random.choice(res_text)}"  
+    return f"HTTPS|{random.choice(res_text)}"  
+    
+def get_proxy_local(path_dir): #로컬경로에서 프록시 리스트 가져옴
+    lines = list()
+    file_list = os.listdir(path_dir)
+    for dir_file in file_list:
+        f = open(path_dir + '/' + dir_file,'r')
+        lines = lines + f.readlines()
+        f.close()
+    ln = random.choice(lines).strip()
+    type_proxy = ln.split(':')[0]
+    return f"{type_proxy}|{ln}"  
 
-#def get_proxy_random():
-#    return f"HTTPS/{random.choice(res_text)}"
+def get_proxy_socket(path_socket4, path_socket5): #Socket4/5 Proxy만 가져옴
+    f1 = open(path_socket4, 'r')
+    f2 = open(path_socket5, 'r')
+    lines = f1.readlines() + f2.readlines()
+    f1.close()
+    f2.close()
+    return f"SOCKET|{random.choice(lines).strip()}"   
 
 def sigint_handler(signal, frame):
     kill_all(kill_pid_backup) #크롬에 킬 신호 전송
@@ -202,4 +208,5 @@ if __name__ == "__main__":
         main()
     except Exception as ex:
         console.log("[bold][red][Important][/red][/bold] 처리되지 않은 오류가 발생했습니다.")
+        console.log(ex)
         exit(0)

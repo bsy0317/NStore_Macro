@@ -130,3 +130,9 @@ dmypy.json
 
 #크롬
 chromedriver.exe
+
+#Proxy
+proxy_scraper/proxies
+http.txt
+socks4.txt
+socks5.txt
