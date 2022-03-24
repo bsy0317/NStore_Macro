@@ -38,7 +38,7 @@ kill_pid_backup = 0
 debugging_port = random.randrange(60000,65000)
 
 def main():
-    URL = "https://cr3.shopping.naver.com/bridge/searchGate?query=%EC%96%91%EB%AF%B8%EB%A6%AC&bt=-1&nv_mid=83539842156&cat_id=50004694&h=21968067ab746ab6a58408a8fc07ef421a3496ee&t=L01XP0GD&frm=NVSCPRO"
+    URL = "https://cr3.shopping.naver.com/bridge/searchGate?query=%EB%B0%98%EA%B1%B4%EC%A1%B0%EC%83%9D%EC%84%A0+%EB%AA%A8%EC%9D%8C&bt=-1&nv_mid=83193516581&cat_id=50004694&h=eab9d2a61eca0e4651fa80f8a1962bff3d7f938e&t=L14D5IAV&frm=NVSCPRO"
     Referer = "https://search.naver.com/search.naver?sm=tab_hty.top&where=nexearch&query=%EC%86%8D%EC%B4%88%EC%98%A4%EB%AF%B8%EC%9E%90&oquery=%EC%86%8D%EC%B4%88%EC%98%A4%EB%AF%B8%EC%A0%80&tqi=hlUfndprvh8ssaZV8PCssssstCs-322620"
     
     options = Options()
@@ -48,7 +48,7 @@ def main():
         console.log(f"[{proxy_server[0]}] Proxy 할당 완료 ({proxy_server[1]})")
         
         try:
-            sp = subprocess.Popen(getChromeDir() + r' --remote-debugging-port='+str(debugging_port)+' --user-data-dir="C:\chrometemp('+str(debugging_port)+')" --incognito --window-size=1024,768' 
+            sp = subprocess.Popen(getChromeDir() + r' --remote-debugging-port='+str(debugging_port)+' --user-data-dir="C:\chrometemp('+str(debugging_port)+')" --incognito --enable-auto-reload --headless' 
             + f" --proxy-server={proxy_server[1]}") # 디버거 크롬 구동(Headless, 익명모드, 프록시)
             kill_pid_backup = sp.pid
             options.add_experimental_option("debuggerAddress", f"127.0.0.1:{debugging_port}") #크롬 디버깅포트 연결
