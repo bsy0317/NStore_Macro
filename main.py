@@ -38,18 +38,20 @@ kill_pid_backup = 0
 debugging_port = random.randrange(60000,65000)
 
 def main():
-    URL = "https://cr3.shopping.naver.com/bridge/searchGate?query=%EB%B0%98%EA%B1%B4%EC%A1%B0%EC%83%9D%EC%84%A0+%EB%AA%A8%EC%9D%8C&bt=-1&nv_mid=83193516581&cat_id=50004694&h=eab9d2a61eca0e4651fa80f8a1962bff3d7f938e&t=L14D5IAV&frm=NVSCPRO"
+    URL = "https://cr.shopping.naver.com/adcr.nhn?x=y4FnUtF4miYQlVRx5Z7mVf%2F%2F%2Fw%3D%3DsLosXZf%2BLOOt2FQPCPDURchm26KpB48sxsneFCTswI5x43kPWHtA22dC3xSkedj2zZU80RUHQcL%2BJx0fcP1PVgNbYIfF1CL6rQCSOp6HU6lLt1Sz5ymzr2rKlzPz2%2F7yIxRd0wBOmnn%2FaDX1H9cVouIZYgwI2fs40XR%2FERq%2FGNyfWK4fiV391hyKbNzjTTmNIa9RbWTddBoHUVg6gSKijQWa%2FohJLYPbt%2Ftp4VZ5J4KTzahDpwQMByMrk%2BYbq0j5kQ%2BD%2Fo9glb0ukJK6bM8miKArsK1DNlYuW6vX8WB7j4SmlEXFhLrSqAdqc5JdbYiqxKE3%2BESsnuy%2BhYrcMEOmDocpHK%2Br58NSzrc5LFh%2BYDVdWiQgLr3%2FJRns3dw3Lw0rIb9uiopIXyxhjKjTNh5ijwFFL5kvBEJ0OQA12%2FbGUzhLyvb48tCdguzEdZImAJk9myynNlMuGt0uaW7wOGqPMs495G6n36dRmqZLm0qGDf3s584AdF%2BEVLICqI2eM8BDnvjOTyOQhsN7nlRxTZLBjQXosIrNDsvUPEQJtFvJ8nUoC%2B1bbKKFgFHshSM9PyUBI63f5mbFE%2FyyY1l25mJXS6M0MQdfT7E%2Fj0KGiA%2FIu6PHytkXZgOPJIg0HS8Yd00DdaE%2F2UoIN%2BWcW6saHp5I2TyGfxk2bXLJVIFMqmc4DrW7XVKRe8%2FEIUv07%2BhtwRORUDVCYCaeglF2rgr1u2OQIzQ%3D%3D&nvMid=83193516581&catId=50004694"
     Referer = "https://search.naver.com/search.naver?sm=tab_hty.top&where=nexearch&query=%EC%86%8D%EC%B4%88%EC%98%A4%EB%AF%B8%EC%9E%90&oquery=%EC%86%8D%EC%B4%88%EC%98%A4%EB%AF%B8%EC%A0%80&tqi=hlUfndprvh8ssaZV8PCssssstCs-322620"
     
     options = Options()
     
     while True:
-        proxy_server = get_proxy_local("./proxy_scraper/proxies").split("|")
+        #proxy_server = get_proxy_local("./proxy_scraper/proxies").split("|")
+        proxy_server = get_proxy_scrap().split("|")
         console.log(f"[{proxy_server[0].upper()}] Proxy 할당 완료 ({proxy_server[1]})")
         
         try:
-            sp = subprocess.Popen(getChromeDir() + r' --remote-debugging-port='+str(debugging_port)+' --user-data-dir="C:\chrometemp('+str(debugging_port)+')" --incognito --enable-auto-reload --headless' 
-            + f" --proxy-server={proxy_server[1]}") # 디버거 크롬 구동(Headless, 익명모드, 프록시)
+            sp = subprocess.Popen(getChromeDir() + r' --remote-debugging-port='+str(debugging_port)+' --user-data-dir="C:\chrometemp('+str(debugging_port)+')" --incognito --enable-auto-reload'
+            +" --noerrdialogs --ignore-certificate-errors --ignore-urlfetcher-cert-requests'"
+            + f" --proxy-server={proxy_server[1]}") # 디버거 크롬 구동(--headless, 익명모드, 프록시)
             kill_pid_backup = sp.pid
             options.add_experimental_option("debuggerAddress", f"127.0.0.1:{debugging_port}") #크롬 디버깅포트 연결
             chrome_ver = chromedriver_autoinstaller.get_chrome_version().split('.')[0] #크롬버전 파싱(폴더경로)
@@ -60,10 +62,22 @@ def main():
                 driver = webdriver.Chrome(f'./{chrome_ver}/chromedriver.exe', options=options)
             time.sleep(2) #2초 기다리기
             
-            driver.get(URL) #스토어 URL 방문
-            if not refresh(driver):
-                raise Exception('SearchGate Page load timeout')
-            
+            try:
+                driver.get(URL) #스토어 URL 방문
+                if not refresh(driver):
+                    raise Exception('SearchGate Page load timeout')
+            except:
+                console.log("[!] Proxy Conn Retry")
+                try:
+                    driver.get(URL) #스토어 URL 방문
+                except:
+                    console.log("[!] Proxy Conn Retry")
+                    try:
+                        driver.get(URL) #스토어 URL 방문
+                    except:
+                        console.log("[!] Proxy Conn Retry")
+                        driver.get(URL) #스토어 URL 방문
+                    
             if not refresh_store(driver):
                 raise Exception('Page load timeout')
             driver.execute_script('window.scrollTo(0, document.body.scrollHeight);') #스크롤을 아래로 내림
@@ -129,9 +143,10 @@ def main():
     return 0
 
 def get_proxy_scrap(): #웹에서 프록시 리스트 가져옴
-    response = requests.get("https://raw.githubusercontent.com/roosterkid/openproxylist/main/HTTPS_RAW.txt")
+    response = requests.get("https://raw.githubusercontent.com/roosterkid/openproxylist/main/SOCKS4_RAW.txt")
     res_text = response.text.split('\n')
-    return f"HTTPS|{random.choice(res_text)}"  
+    ran = "socks4://"+random.choice(res_text)
+    return f"SOCKS4|{ran}"  
     
 def get_proxy_local(path_dir): #로컬경로에서 프록시 리스트 가져옴
     lines = list()

@@ -3,7 +3,7 @@
 # How many seconds to wait for the proxy to make a connection.
 # The higher this number, the longer the check will take
 # and the more proxies you will receive.
-TIMEOUT = 5
+TIMEOUT = 3
 
 # Maximum concurrent connections.
 # Don't set higher than 900, please.
@@ -49,8 +49,8 @@ HTTP_SOURCES = (
     "https://raw.githubusercontent.com/Volodichev/proxy-list/main/http.txt",
     "https://www.proxy-list.download/api/v1/get?type=http",
     "https://www.proxy-list.download/api/v1/get?type=https",
-    "https://www.proxyscan.io/download?type=http",
-    "https://www.proxyscan.io/download?type=https",
+    "http://www.proxyscan.io/download?type=http",
+    "http://www.proxyscan.io/download?type=https",
 )
 SOCKS4 = True
 SOCKS4_SOURCES = (
@@ -61,8 +61,8 @@ SOCKS4_SOURCES = (
     "https://raw.githubusercontent.com/roosterkid/openproxylist/main/SOCKS4_RAW.txt",
     "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks4.txt",
     "https://raw.githubusercontent.com/UserR3X/proxy-list/main/socks4.txt",
-    "https://www.proxy-list.download/api/v1/get?type=socks4",
-    "https://www.proxyscan.io/download?type=socks4",
+    "http://www.proxy-list.download/api/v1/get?type=socks4",
+    "http://www.proxyscan.io/download?type=socks4",
 )
 SOCKS5 = True
 SOCKS5_SOURCES = (
@@ -75,6 +75,6 @@ SOCKS5_SOURCES = (
     "https://raw.githubusercontent.com/roosterkid/openproxylist/main/SOCKS5_RAW.txt",
     "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks5.txt",
     "https://raw.githubusercontent.com/UserR3X/proxy-list/main/socks5.txt",
-    "https://www.proxy-list.download/api/v1/get?type=socks5",
-    "https://www.proxyscan.io/download?type=socks5",
+    "http://www.proxy-list.download/api/v1/get?type=socks5",
+    "http://www.proxyscan.io/download?type=socks5",
 )
